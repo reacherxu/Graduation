@@ -3,7 +3,9 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -24,20 +26,24 @@ import com.nlpir.PorterStemmer;
 public class IDFCal {
 	String dataFile;
 	String dicFile;
+	String outFile = "vector";
 	ArrayList<String> docs;
 	ArrayList<Term> termList;
 	WordFilter filter;
 	double docNum;
+	String relationFile;
 	
 	Map<String,Integer> dic;
 	/* 记录每篇文章的词频 */
 	Map<ArrayList<Term>,Integer> termWithinDoc;
 	ArrayList<String> labels ;
 	
+	Map<String,Integer> relation;
+
+	
 	PorterStemmer porter = new PorterStemmer();
 	
-	public IDFCal()
-	{
+	public IDFCal() {
 		dataFile = "result/train_word.txt";	
 		docs = new ArrayList<String>();
 		termList = new ArrayList<Term>();
@@ -49,6 +55,26 @@ public class IDFCal {
 		labels = new ArrayList<String>();
 		
 //		loadDic();
+		relationFile = "experiments/relation";
+		loadRelation();
+	}
+	
+	public IDFCal(String dataFile,String outFile)
+	{
+		this.dataFile = dataFile;	
+		this.outFile = outFile;
+		docs = new ArrayList<String>();
+		termList = new ArrayList<Term>();
+		filter = new WordFilter(); 
+		
+		dic = new LinkedHashMap<String,Integer>();
+		dicFile = "result/TRAIN_FILE_bag";
+		termWithinDoc = new LinkedHashMap<ArrayList<Term>,Integer>(); 
+		labels = new ArrayList<String>();
+		
+		loadDic();
+		relationFile = "experiments/relation";
+		loadRelation();
 	}
 	
 	/**
@@ -71,6 +97,26 @@ public class IDFCal {
 			e.printStackTrace();
 		} 
 	}
+	
+	private void loadRelation() {
+		relation = new HashMap<String, Integer>();
+		
+		try {
+			BufferedReader reader = new BufferedReader(
+					new FileReader(new File(relationFile)));
+
+			while( reader.ready() ) {
+				relation.put(reader.readLine(), relation.size()+1);
+			}
+
+			reader.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
 
 	/**
 	 * 1行为1篇文档
@@ -79,7 +125,8 @@ public class IDFCal {
 	{
 		String docLine;
 		try {
-			BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(new File(dataFile))));
+			BufferedReader br=new BufferedReader(
+					new InputStreamReader(new FileInputStream(new File("result/" + dataFile))));
 			while((docLine = br.readLine())!=null)
 			{
 				//XXX:全部加载到内存，不适合特别大的语料
@@ -122,12 +169,8 @@ public class IDFCal {
 						porter.stem();
 						
 						String word = porter.toString();
-						if( !dic.containsKey(word) )
-							dic.put(word, dic.size()+1);
-
 						porter.reset();
 						
-					
 						count++;
 						addItemInDoc(word,termInDoc);	
 					}
@@ -147,7 +190,7 @@ public class IDFCal {
 	public void word2Vec() {
 		try {
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(new File("result/vector_1"))));
+					new FileOutputStream(new File("result/" + outFile))));
 			
 			int i = 0;
 			for(Map.Entry<ArrayList<Term>,Integer> entry : termWithinDoc.entrySet() ) {
@@ -165,20 +208,24 @@ public class IDFCal {
 						if(dic.get(tmpTermStr) == null)
 							continue;
 						else {
-							if(j == 0)
-								bw.write(labels.get(i) + " " + dic.get(tmpTermStr) + ":" +
+							if(j == 0) {
+								bw.write(relation.get(labels.get(i)) + " " + dic.get(tmpTermStr) + ":" +
 										termDoc.getTermFreq() / allTermCount * termAll.getIDF() + " ");
-							else
+							}
+							else {
 								bw.write(dic.get(tmpTermStr) + ":" +
 										termDoc.getTermFreq() / allTermCount * termAll.getIDF() + " ");
+							}
 						}
 					} 
 				}
 				
 				bw.newLine();
+				bw.flush();
 				i++;
 			}
 			
+			bw.flush();
 			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();

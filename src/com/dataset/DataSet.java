@@ -14,16 +14,30 @@ import com.nlpir.WordSeparation;
 
 public class DataSet {
 	
-	final String file = "experiments/train.txt"; 
-	final String outFile = "result/train_word.txt";
+	String file = "train"; 
+	String outFile = file + "_word";
+
 	
 	List<Item> dataSet;
 	WordSeparation ws ;
-
+	
 	public DataSet() {
 		dataSet = new ArrayList<Item>();
 	}
 	
+	public String getFile() {
+		return file;
+	}
+
+	public void setFile(String file) {
+		this.file = file;
+		outFile = file + "_word";
+	}
+
+	public String getOutFile() {
+		return outFile;
+	}
+
 	public List<Item> getDataSet() {
 		return dataSet;
 	}
@@ -35,7 +49,7 @@ public class DataSet {
 	public void read() {
 		try {
 			BufferedReader reader = new BufferedReader(
-					new FileReader(new File(file)));
+					new FileReader(new File("experiments/" + file)));
 
 			while( reader.ready() ) {
 				Item item = new Item();
@@ -46,7 +60,7 @@ public class DataSet {
 				recogEntity(item);
 				item.setLabel(reader.readLine());
 				
-				System.out.println(item.getE1() + "," + item.getE2() + "," + item.getLabel());
+//				System.out.println(item.getE1() + "," + item.getE2() + "," + item.getLabel());
 				dataSet.add(item);
 				
 				reader.readLine();
@@ -60,6 +74,7 @@ public class DataSet {
 			e.printStackTrace();
 		}
 	}
+	
 
 	/**
 	 * 识别entity并去除tag
@@ -78,7 +93,7 @@ public class DataSet {
 		ws = new WordSeparation();
 		
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(outFile));
+			BufferedWriter writer = new BufferedWriter(new FileWriter("result/" + outFile));
 			
 			for (int i = 0; i < dataSet.size(); i++) {
 				Item item = dataSet.get(i);

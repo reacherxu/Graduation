@@ -8,6 +8,9 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.dataset.DataSet;
+import com.idfcal.IDFCal;
+
 public class Test {
 	
 	
@@ -35,17 +38,31 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		String fileName = "train";
 		
-		loadDic();
+		DataSet db = new DataSet();
+		db.setFile(fileName);
+		db.read();
+		db.write();
+		String input = db.getOutFile();
 		
+		IDFCal idfCal = new IDFCal(input,"train_vec");
+		idfCal.getDocs();
+		idfCal.getTermList();
+		idfCal.word2Vec();
 		
-/*//		String str = "Conflicting loads were stalled while pending <e1>stores</e1> were draining into <e2>memory</e2>.";
-		String str  = "Instead, <e1>criminal law</e1> is set out in a diverse <e2>range</e2> of statutes and court decisions.";
+//		String str = "Conflicting loads were stalled while pending <e1>stores</e1> were draining into <e2>memory</e2>.";
+//		String str  = "Flamenco and bullfight cultural icons such as the ghostly bullhorns of the bullfight, or the anvil of the Romani (gypsy) blacksmiths are used in these paintings to visually sing a seguiriyas.";
 //		String str = "I've got the <e1>world</e1> in a <e2>jug</e2>, the stopper's in my hand.";
 		
-		System.out.println(str.substring(str.indexOf("<e1>")+4,str.indexOf("</e1>")));
-		System.out.println(str.substring(str.indexOf("<e2>")+4,str.indexOf("</e2>")));
-		System.out.println(str.replaceAll("<.+?>", ""));*/
+//		System.out.println(str.substring(0,str.length()-1));
+//		System.out.println("d".matches("\\w"));
+//		String tmp[] = str.split("\\s");
+//		for (int i = 0; i < tmp.length; i++) {
+//			System.out.print(tmp[i] + "  ");
+//		}
+		
+//		System.out.println(str.replaceAll("<.+?>", ""));
 	}
 
 }
