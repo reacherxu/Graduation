@@ -13,6 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.nlpir.PorterStemmer;
+
 /**
  * 对中文句子进行相似度计算，有计算句子权值、排序、两两句子之间的相似度计算
  * 问题是全部加载到内存    不适合特别大的语料
@@ -32,25 +34,27 @@ public class IDFCal {
 	Map<ArrayList<Term>,Integer> termWithinDoc;
 	ArrayList<String> labels ;
 	
+	PorterStemmer porter = new PorterStemmer();
+	
 	public IDFCal()
 	{
-		dataFile = "data/data.txt";	
+		dataFile = "result/train_word.txt";	
 		docs = new ArrayList<String>();
 		termList = new ArrayList<Term>();
 		filter = new WordFilter(); 
 		
-		dicFile = "dic/dic_chs.txt";
+		dic = new LinkedHashMap<String,Integer>();
+		dicFile = "dic/dic_ec.txt";
 		termWithinDoc = new LinkedHashMap<ArrayList<Term>,Integer>(); 
 		labels = new ArrayList<String>();
 		
-		loadDic();
+//		loadDic();
 	}
 	
 	/**
 	 * 加载词典
 	 */
 	private void loadDic() {
-		dic = new HashMap<String,Integer>();
 		
 		String docLine;
 		int count = 1;
@@ -58,7 +62,8 @@ public class IDFCal {
 			BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(new File(dicFile))));
 			while((docLine = br.readLine())!=null)
 			{
-				dic.put(docLine,count++);
+				String s[] = docLine.split("");
+				dic.put(s[0],count++);
 			}
 			
 			br.close();
@@ -113,10 +118,18 @@ public class IDFCal {
 					String tmp = docInstance.substring(start+1, end);
 					if(!filter.isFiltered(tmp))
 					{
-//						if( !dic.contains(tmp) )
-//							System.out.println("not contains: " + tmp);
+						porter.add(tmp.toCharArray(),tmp.length());
+						porter.stem();
+						
+						String word = porter.toString();
+						if( !dic.containsKey(word) )
+							dic.put(word, dic.size()+1);
+
+						porter.reset();
+						
+					
 						count++;
-						addItemInDoc(tmp,termInDoc);	
+						addItemInDoc(word,termInDoc);	
 					}
 					
 //					System.out.println("add item: "+docInstance.substring(start+1, end));
@@ -134,7 +147,7 @@ public class IDFCal {
 	public void word2Vec() {
 		try {
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(new File("result/vector"))));
+					new FileOutputStream(new File("result/vector_1"))));
 			
 			int i = 0;
 			for(Map.Entry<ArrayList<Term>,Integer> entry : termWithinDoc.entrySet() ) {
@@ -151,9 +164,14 @@ public class IDFCal {
 						//去除字典中没有的词语
 						if(dic.get(tmpTermStr) == null)
 							continue;
-						else
-							bw.write(labels.get(i) + " " + dic.get(tmpTermStr) + ":" +
-								termDoc.getTermFreq() / allTermCount * termAll.getIDF());
+						else {
+							if(j == 0)
+								bw.write(labels.get(i) + " " + dic.get(tmpTermStr) + ":" +
+										termDoc.getTermFreq() / allTermCount * termAll.getIDF() + " ");
+							else
+								bw.write(dic.get(tmpTermStr) + ":" +
+										termDoc.getTermFreq() / allTermCount * termAll.getIDF() + " ");
+						}
 					} 
 				}
 				

@@ -524,6 +524,7 @@ public class PorterStemmer
             return dirty;
         }
  
+        
         /// Test program for demonstrating the Stemmer.  It reads a file and
         /// stems each word, writing the result to standard out. 
         /// Usage: Stemmer file-name
@@ -532,62 +533,19 @@ public class PorterStemmer
         {
         	/* 传入的单词是小写，且传入下一个单词前s.reset();   */
             PorterStemmer s = new PorterStemmer();
-            String str = "greatly";
+            String str = "imposed";
+            s.add(str.toCharArray(),str.length());
+            s.stem();
+           
+            System.out.println(s.toString());
+            
+            s.reset();
+            
+            str = "candidates";
             s.add(str.toCharArray(),str.length());
             s.stem();
             System.out.println(s.toString());
             
             
-            /*for (int i = 0; i < args.Length; i++)
-            {
-                try
-                {
-                    FileStream fs = new FileStream(args[i], FileMode.Open);
-                    byte[] buffer = new byte[1024];
-                    int bufferLen, offset, ch;
- 
-                    bufferLen = fs.Read(buffer, 0, buffer.Length);
-                    offset = 0;
-                    s.reset();
- 
-                    while (true)
-                    {
-                        if (offset < bufferLen)
-                            ch = buffer[offset++];
-                        else
-                        {
-                            bufferLen = fs.Read(buffer, 0, buffer.Length);
-                            offset = 0;
-                            if (bufferLen < 0)
-                                ch = -1;
-                            else
-                                ch = buffer[offset++];
-                        }
- 
-                        if (Char.IsLetter((char)ch))
-                        {
-                            s.add(Char.ToLower((char)ch));
-                        }
-                        else
-                        {
-                            s.stem();
-                            Console.Write(s.toString());
-                            s.reset();
-                            if (ch < 0)
-                                break;
-                            else
-                            {
-                                Console.Write((char)ch);
-                            }
-                        }
-                    }
- 
-                    fs.Close();
-                }
-                catch (IOException e)
-                {
-                    Console.WriteLine("error reading " + args[i], e);
-                }
-            }*/
         }
     }

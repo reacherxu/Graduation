@@ -2,7 +2,7 @@ package com.nlpir;
 import com.sun.jna.Native;
 
 public class Demo {
-
+	
     
     public static void main(String[] args) throws Exception {
         //初始化
