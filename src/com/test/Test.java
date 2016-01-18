@@ -38,7 +38,7 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String fileName = "train";
+		String fileName = "test";
 		
 		DataSet db = new DataSet();
 		db.setFile(fileName);
@@ -46,7 +46,7 @@ public class Test {
 		db.write();
 		String input = db.getOutFile();
 		
-		IDFCal idfCal = new IDFCal(input,"train_vec");
+		IDFCal idfCal = new IDFCal(input,"test_vec");
 		idfCal.getDocs();
 		idfCal.getTermList();
 		idfCal.word2Vec();

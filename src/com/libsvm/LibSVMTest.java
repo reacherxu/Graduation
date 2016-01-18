@@ -16,9 +16,9 @@ public class LibSVMTest {
 		//svm_predect:
 		//	  param: String[], parse result of command line parameter of svm-predict, including the modelfile
 		//    return: Double, the accuracy of SVM classification
-		String[] trainArgs = {"result/train_vec"};//directory of training file
+		String[] trainArgs = {"test/a1a"};//directory of training file
 		String modelFile = svm_train.main(trainArgs);
-		String[] testArgs = {"result/test_vec", modelFile, "result/sem-eval-result"};//directory of test file, model file, result file
+		String[] testArgs = {"test/a1a.t", modelFile, "test/a1a.res"};//directory of test file, model file, result file
 		Double accuracy = svm_predict.main(testArgs);
 		System.out.println("SVM Classification is done! The accuracy is " + accuracy);
 		

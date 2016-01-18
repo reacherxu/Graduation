@@ -68,7 +68,7 @@ public class IDFCal {
 		filter = new WordFilter(); 
 		
 		dic = new LinkedHashMap<String,Integer>();
-		dicFile = "result/TRAIN_FILE_bag";
+		dicFile = "result/bag_bag";
 		termWithinDoc = new LinkedHashMap<ArrayList<Term>,Integer>(); 
 		labels = new ArrayList<String>();
 		
@@ -208,13 +208,14 @@ public class IDFCal {
 						if(dic.get(tmpTermStr) == null)
 							continue;
 						else {
+							//TODO  termDoc.getTermFreq() / allTermCount * termAll.getIDF()
 							if(j == 0) {
 								bw.write(relation.get(labels.get(i)) + " " + dic.get(tmpTermStr) + ":" +
-										termDoc.getTermFreq() / allTermCount * termAll.getIDF() + " ");
+										(int)termDoc.getTermFreq()  + " ");
 							}
 							else {
 								bw.write(dic.get(tmpTermStr) + ":" +
-										termDoc.getTermFreq() / allTermCount * termAll.getIDF() + " ");
+										(int)termDoc.getTermFreq()  + " ");
 							}
 						}
 					} 
