@@ -1,8 +1,12 @@
 package com.test;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -15,6 +19,7 @@ public class Test {
 	
 	
 	
+	@SuppressWarnings("unused")
 	private static void loadDic() {
 		Map<String,Integer> dic = new HashMap<String,Integer>();
 		
@@ -34,11 +39,37 @@ public class Test {
 		} 
 	}
 
+	
+	public static void read() {
+		try {
+			BufferedReader reader = new BufferedReader(
+					new FileReader(new File("test/法律文书-result.txt")));
+			
+			while( reader.ready() ) {
+				String line = reader.readLine();
+				if( !line.matches("\\s+") ) {
+					String tmp[] = line.split("\\s+");
+
+					for (int i = 0; i < tmp.length; i++) {
+						if( tmp[i].contains("nr"))
+							System.out.println(tmp[i]);
+					}
+				}
+			}
+			reader.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String fileName = "test";
+		read();
+		/*String fileName = "test";
 		
 		DataSet db = new DataSet();
 		db.setFile(fileName);
@@ -49,7 +80,7 @@ public class Test {
 		IDFCal idfCal = new IDFCal(input,"test_vec");
 		idfCal.getDocs();
 		idfCal.getTermList();
-		idfCal.word2Vec();
+		idfCal.word2Vec();*/
 		
 //		String str = "Conflicting loads were stalled while pending <e1>stores</e1> were draining into <e2>memory</e2>.";
 //		String str  = "Flamenco and bullfight cultural icons such as the ghostly bullhorns of the bullfight, or the anvil of the Romani (gypsy) blacksmiths are used in these paintings to visually sing a seguiriyas.";
