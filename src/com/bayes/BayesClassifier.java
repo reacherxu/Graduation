@@ -12,7 +12,7 @@ public class BayesClassifier
 {
 	private TrainingDataManager tdm;//训练集管理器
 //	private String trainnigDataPath;//训练集路径
-	private static double zoomFactor = 10.0f;
+	private static double zoomFactor = 1f;
 	/**
 	* 默认的构造器，初始化训练集
 	*/
@@ -36,10 +36,10 @@ public class BayesClassifier
 		{
 			String Xi = X[i];
 			//因为结果过小，因此在连乘之前放大10倍，这对最终结果并无影响，因为我们只是比较概率大小而已
-			ret *=ClassConditionalProbability.calculatePxc(Xi, Cj)*zoomFactor;
+			ret += Math.log10(ClassConditionalProbability.calculatePxc(Xi, Cj)*zoomFactor);
 		}
 		// 再乘以先验概率
-		ret *= PriorProbability.calculatePc(Cj);
+		ret += Math.log10(PriorProbability.calculatePc(Cj));
 		return ret;
 	}
 	/**
@@ -111,7 +111,7 @@ public class BayesClassifier
 	
 	public static void main(String[] args)
 	{
-		String text = "沈阳市副市长王玲、沈阳市教育局局长李梦玲、教育部职成司副司长刘占山、清华大学副校长陈吉宁参加了首期研修班的开班仪式。他们表示，清华大学和沈阳市的这种合作，必将促进沈阳市职业教育的跨越式发展，双方在市、校人才合作培养模式上的有益探索，不仅会加深和扩大双方在各个领域的合作，也会对全国的职业教育提供有益的经验";
+		String text = "新浪将在美国当地时间5月9日公布第一季度财报，分析师预计新浪第一季度营收为4590万美元，每股收益为0.15美元，同比下滑25%%。在所有研究新浪股票的分析师中，有五位对新浪的评级为“买入”，有八位的评级为“持有”，有两位的评级为“卖出”。";
 		BayesClassifier classifier = new BayesClassifier();//构造Bayes分类器
 		String result = classifier.classify(text);//进行分类
 		System.out.println("此项属于["+result+"]");
